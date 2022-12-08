@@ -2,7 +2,7 @@ from django.shortcuts import render, redirect
 from django.contrib.auth.models import User, auth
 from django.contrib import messages
 from django.contrib.auth.decorators import login_required
-from .models import Post, Profile
+from .models import Post, Profile, LikePost
 from django.http import HttpResponse
 
 # Create your views here.
@@ -11,7 +11,9 @@ def index(request):
 
     user_object = User.objects.get(username=request.user)
     user_profile = Profile.objects.get(user=user_object)
-    return render(request, 'index.html', {'user_profile': user_profile})
+
+    posts = Post.objects.all()
+    return render(request, 'index.html', {'user_profile': user_profile, 'posts': posts})
 
 def signup(request):
 
@@ -101,10 +103,32 @@ def upload(request):
     if request.method == 'POST':
         HttpResponse("criando um post")
         user = request.user.username
-        # image = request.FILES.get('image_upload')
-        # caption = request.POST['caption']
+        image = request.FILES.get('image_upload')
+        caption = request.POST['caption']
 
-        new_post = Post.objects.create(user=user)
+        new_post = Post.objects.create(user=user, image=image, caption=caption)
         new_post.save()
+
+    return redirect('/')
+
+@login_required(login_url='signin')
+def like_post(request):
+    
+    username = request.user.username
+    post_id = request.POST.get('post_id')
+    post = Post.objects.get(id=post_id)
+
+    like_filter = LikePost.objects.filter(post_id=post_id, username=username).first()
+
+    if like_filter == None:
+        new_like = LikePost.objects.create(post_id=post_id, username=username)
+        new_like.save()
+        post.no_of_likes += 1
+
+    else:
+        like_filter.delete()
+        post.no_of_likes -= 1
+    
+    post.save()
 
     return redirect('/')
