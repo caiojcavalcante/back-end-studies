@@ -43,7 +43,7 @@ def signup(request):
                 new_profile = Profile.objects.create(user=user_model, id_user=user_model.id)
                 new_profile.save()
                 return redirect('settings')
-                
+
 
         else:
             messages.info(request, 'Passwords do not match')
@@ -93,7 +93,7 @@ def settings(request):
 
 @login_required(login_url='signin')
 def logout(request):
-    
+
     auth.logout(request)
     return redirect('signin')
 
@@ -113,34 +113,22 @@ def upload(request):
 
 @login_required(login_url='signin')
 def like_post(request):
-    
+
     username = request.user.username
-    print('DEBUG')
-    print('DEBUG')
-    print('DEBUG')
-    print('DEBUG')
-    print('DEBUG')
-    print('DEBUG')
-    query_strings = request.environ.get("query_strings")
-    print(query_strings)
-    # post_id = query_strings.get("post_id")
-    # print(post_id)
-    print('DEBUG')
-    print('DEBUG')
-    print('DEBUG')
-    # post = Post.objects.get(id=post_id)
+    post_id = request.GET.get('post_id')
+    post = Post.objects.get(id=post_id)
 
-    # like_filter = LikePost.objects.filter(post_id=post_id, username=username).first()
+    like_filter = LikePost.objects.filter(post_id=post_id, username=username).first()
 
-    # if like_filter == None:
-    #     new_like = LikePost.objects.create(post_id=post_id, username=username)
-    #     new_like.save()
-    #     post.no_of_likes += 1
+    if like_filter == None:
+        new_like = LikePost.objects.create(post_id=post_id, username=username)
+        new_like.save()
+        post.no_of_likes += 1
 
-    # else:
-    #     like_filter.delete()
-    #     post.no_of_likes -= 1
-    
-    # post.save()
+    else:
+        like_filter.delete()
+        post.no_of_likes -= 1
 
-    return redirect('/')
+    post.save()
+
+    return redirect('/#')
