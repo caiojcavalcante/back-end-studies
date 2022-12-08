@@ -115,20 +115,32 @@ def upload(request):
 def like_post(request):
     
     username = request.user.username
-    post_id = request.POST.get('post_id')
-    post = Post.objects.get(id=post_id)
+    print('DEBUG')
+    print('DEBUG')
+    print('DEBUG')
+    print('DEBUG')
+    print('DEBUG')
+    print('DEBUG')
+    query_strings = request.environ.get("query_strings")
+    print(query_strings)
+    # post_id = query_strings.get("post_id")
+    # print(post_id)
+    print('DEBUG')
+    print('DEBUG')
+    print('DEBUG')
+    # post = Post.objects.get(id=post_id)
 
-    like_filter = LikePost.objects.filter(post_id=post_id, username=username).first()
+    # like_filter = LikePost.objects.filter(post_id=post_id, username=username).first()
 
-    if like_filter == None:
-        new_like = LikePost.objects.create(post_id=post_id, username=username)
-        new_like.save()
-        post.no_of_likes += 1
+    # if like_filter == None:
+    #     new_like = LikePost.objects.create(post_id=post_id, username=username)
+    #     new_like.save()
+    #     post.no_of_likes += 1
 
-    else:
-        like_filter.delete()
-        post.no_of_likes -= 1
+    # else:
+    #     like_filter.delete()
+    #     post.no_of_likes -= 1
     
-    post.save()
+    # post.save()
 
     return redirect('/')
